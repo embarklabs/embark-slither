@@ -1,0 +1,28 @@
+{
+  "name": "embark-slither",
+  "version": "1.0.0",
+  "description": "Embark Slither plugin",
+  "main": "index.js",
+  "keywords": [
+    "blockchain",
+    "dapps",
+    "ethereum",
+    "serverless",
+    "solc",
+    "solidity",
+    "slither"
+  ],
+  "author": "Anthony Laibe",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/embark-framework/embark-solc/issues"
+  },
+  "homepage": "https://embark.status.im/",
+  "dependencies": {
+    "fs-extra": "^7.0.1",
+    "shelljs": "^0.8.3"
+  },
+  "devDependencies": {
+    "eslint": "^5.13.0"
+  }
+}
