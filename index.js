@@ -1,3 +1,4 @@
+const path = require("path");
 const fs = require("fs-extra");
 const shelljs = require("shelljs");
 
@@ -5,29 +6,32 @@ function isSlitherInstalled() {
   return shelljs.which("slither");
 }
 
-function executeSlither(path) {
-  shelljs.exec(`slither ${path}`);
+function executeSlither(astFile) {
+  shelljs.exec(`slither ${astFile}`);
 }
 
-function getHeader(path) {
-  return `
-JSON AST (compact format):
-======= ${path} =======
+function buildAstData(sources) {
+  const header = "JSON AST (compact format):\n";
+  const data = Object.keys(sources).map((key) => {
+    return `
+======= ${key} =======
+
+${JSON.stringify(sources[key].ast, null, 2)}
 `;
+  });
+  return header + data.join("\n");
 }
 
-function run(compilationResult) {
+async function run(compilationResult) {
   if (!isSlitherInstalled()) {
     console.log("Slither is not installed, visit: https://github.com/trailofbits/slither");
     return;
   }
-
-  Object.keys(compilationResult.sources).forEach((path) => {
-    const ast = compilationResult.sources[path].ast;
-    const astPath = `${path}.ast.json`;
-    fs.writeFileSync(astPath, getHeader(path) + JSON.stringify(ast, null, 2));
-    executeSlither(astPath);
-  });
+  const astFile = path.join(".embark", "slither", "ast.json");
+  const astData = buildAstData(compilationResult.sources);
+  await fs.ensureFile(astFile);
+  await fs.writeFile(astFile, astData);
+  executeSlither(astFile);
 }
 
 function register(embark) {
