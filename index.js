@@ -7,7 +7,7 @@ function isSlitherInstalled() {
 }
 
 function executeSlither(astFile, flags = '') {
-  shelljs.exec(`slither ${astFile} ${flags}`);
+  shelljs.exec(`slither ${astFile} ${Array.isArray(flags) ? flags.join(' ') : flags}`);
 }
 
 function buildAstData(sources) {
