@@ -6,8 +6,8 @@ function isSlitherInstalled() {
   return shelljs.which("slither");
 }
 
-function executeSlither(astFile) {
-  shelljs.exec(`slither ${astFile}`);
+function executeSlither(astFile, flags = '') {
+  shelljs.exec(`slither ${astFile} ${flags}`);
 }
 
 function buildAstData(sources) {
@@ -22,7 +22,7 @@ ${JSON.stringify(sources[key].ast, null, 2)}
   return header + data.join("\n");
 }
 
-async function run(compilationResult) {
+async function run(embark, compilationResult) {
   if (!isSlitherInstalled()) {
     console.log("Slither is not installed, visit: https://github.com/trailofbits/slither");
     return;
@@ -31,11 +31,11 @@ async function run(compilationResult) {
   const astData = buildAstData(compilationResult.sources);
   await fs.ensureFile(astFile);
   await fs.writeFile(astFile, astData);
-  executeSlither(astFile);
+  executeSlither(astFile, embark.pluginConfig.flags);
 }
 
 function register(embark) {
-  embark.events.on("contracts:compiled:solc", run);
+  embark.events.on("contracts:compiled:solc", run.bind(null, embark));
 }
 
 module.exports = register;
