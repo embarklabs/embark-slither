@@ -18,7 +18,9 @@ then add embark-slither to the plugins section in ```embark.json```:
 
 ```Json
   "plugins": {
-    "embark-slither": {}
+    "embark-slither": {
+      "flags": ""
+    }
   }
 ```
 
