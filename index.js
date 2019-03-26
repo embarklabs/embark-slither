@@ -6,8 +6,12 @@ function isSlitherInstalled() {
   return shelljs.which("slither");
 }
 
-function executeSlither(astFile, flags = '') {
-  shelljs.exec(`slither ${astFile} ${Array.isArray(flags) ? flags.join(' ') : flags}`);
+function executeSlither(astFile, flags = '', logger) {
+  shelljs.exec(`slither ${astFile} ${Array.isArray(flags) ? flags.join(' ') : flags}`, {silent: true }, function (code, stdout, stderr) {
+    if (stderr) {
+      logger.info(stderr);
+    }
+  });
 }
 
 function buildAstData(sources) {
@@ -24,14 +28,14 @@ ${JSON.stringify(sources[key].ast, null, 2)}
 
 async function run(embark, compilationResult) {
   if (!isSlitherInstalled()) {
-    console.log("Slither is not installed, visit: https://github.com/trailofbits/slither");
+    embark.logger.warn("Slither is not installed, visit: https://github.com/trailofbits/slither");
     return;
   }
   const astFile = path.join(".embark", "slither", "ast.json");
   const astData = buildAstData(compilationResult.sources);
   await fs.ensureFile(astFile);
   await fs.writeFile(astFile, astData);
-  executeSlither(astFile, embark.pluginConfig.flags);
+  executeSlither(astFile, embark.pluginConfig.flags, embark.logger);
 }
 
 function register(embark) {
